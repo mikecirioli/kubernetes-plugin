@@ -36,7 +36,7 @@ import hudson.slaves.NodeProvisioner;
 import hudson.util.DescribableList;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.jenkins.plugins.kubernetes.NoDelayProvisionerStrategy;
+import io.jenkins.plugins.kubernetes.KubernetesNoDelayProvisionerStrategy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +79,7 @@ public abstract class AbstractKubernetesPipelineTest {
     @Rule
     public LoggerRule logs = new LoggerRule()
             .recordPackage(KubernetesCloud.class, Level.FINE)
-            .recordPackage(NoDelayProvisionerStrategy.class, Level.FINE)
+            .recordPackage(KubernetesNoDelayProvisionerStrategy.class, Level.FINE)
             .record(PodUtils.class, Level.FINE)
             .record(NodeProvisioner.class, Level.FINE)
             .record(KubernetesAgentErrorCondition.class, Level.FINE);

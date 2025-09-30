@@ -26,6 +26,17 @@ see the [Docker image source code](https://github.com/jenkinsci/docker-agent).
 
 It is not required to run the Jenkins controller inside Kubernetes.
 
+## Key Features
+
+**Enhanced Provisioning (since 2.0):** The plugin now leverages Jenkins core's advanced provisioning infrastructure, providing:
+- **Intelligent Cloud Ordering:** CloudStateManager optimizes cloud selection for better resource utilization
+- **Over-Provisioning Protection:** CloudProvisioningLimits prevents excessive agent creation
+- **Performance Metrics:** ProvisioningMetrics tracks provisioning attempts, successes, and failures for monitoring
+- **Queue Item Tracking:** QueueItemTracker links queue items to provisioned agents for better cleanup when builds are cancelled
+- **No-Delay Provisioning:** Kubernetes agents are still provisioned immediately when builds enter the queue (KubernetesNoDelayProvisionerStrategy extends core's implementation)
+
+> **Note:** Version 2.0+ requires Jenkins 2.530 or later, which includes fixes to the `NoDelayProvisionerStrategy` that restore the complete `CloudProvisioningListener` lifecycle. These fixes ensure proper monitoring and control of provisioning events.
+
 # 📜 Table of Contents
 
 - [Generic setup](#generic-setup)
@@ -49,7 +60,7 @@ It is not required to run the Jenkins controller inside Kubernetes.
 # Generic Setup
 ## Prerequisites
 * A running Kubernetes cluster 1.14 or later. For OpenShift users, this means OpenShift Container Platform 4.x.
-* A Jenkins instance installed
+* Jenkins 2.530 or later (required for version 2.0+ of this plugin)
 * The Jenkins Kubernetes plugin installed
 * A ServiceAccount with sufficient privileges ([example](src/main/kubernetes/service-account.yml))
 
@@ -815,7 +826,7 @@ Please read [Features controlled by system properties](https://www.jenkins.io/do
 
 * `KUBERNETES_JENKINS_URL` : Jenkins URL to be used by agents. This is meant to be used for OEM integration.
 * `io.jenkins.plugins.kubernetes.disableNoDelayProvisioning` (since 1.19.1) Whether to disable the no-delay provisioning strategy the plugin uses (defaults to `false`).
-* `io.jenkins.plugins.kubernetes.NoDelayProvisionerStrategy.disableCloudShuffle` Whether to disable the shuffling of clouds. When true clouds will be searched in order they are defined (defaults to `false`).
+* `io.jenkins.plugins.kubernetes.NoDelayProvisionerStrategy.disableCloudShuffle` **[DEPRECATED since 2.0]** This property is no longer used. The plugin now uses Jenkins core's intelligent cloud ordering via CloudStateManager which provides better cloud selection and load distribution.
 * `jenkins.host.address` : (for unit tests) controls the host agents should use to contact Jenkins
 * `org.csanchez.jenkins.plugins.kubernetes.PodTemplate.connectionTimeout` : The time in seconds to wait before considering the pod scheduling has failed (defaults to `1000`)
 * `org.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.stdinBufferSize` : stdin buffer size in bytes for commands sent to Kubernetes exec api. A low value will cause slowness in commands executed. A higher value will consume more memory (defaults to `16*1024`)
